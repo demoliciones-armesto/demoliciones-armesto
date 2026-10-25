@@ -1,18 +1,22 @@
 name: Deploy GitHub Pages
 
+
 on:
   push:
     branches: ["main"]
   workflow_dispatch:
+
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
+
 concurrency:
   group: pages
   cancel-in-progress: true
+
 
 jobs:
   deploy:
@@ -23,6 +27,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Generate application icons
+        run: |
+          python3 - <<'PY'
+          import base64
+          import json
+          from pathlib import Path
+          icons = Path("pwa-icons.json")
+          if icons.exists():
+              for name, data in json.loads(icons.read_text()).items():
+                  if name not in {"icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"}:
+                      raise ValueError("Unexpected icon filename")
+                  Path(name).write_bytes(base64.b64decode(data, validate=True))
+          PY
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site
@@ -32,3 +49,4 @@ jobs:
       - name: Deploy Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
