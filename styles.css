@@ -640,3 +640,6 @@
     .hero-content .hero-stats strong{font-size:26px;}
     .hero-content .hero-stats small{font-size:10px;}
   }
+
+/* Keep the pinned opening image inside its section. */
+.hero{overflow:clip;}
